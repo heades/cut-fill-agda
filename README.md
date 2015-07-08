@@ -8,4 +8,5 @@ by Harley Eades III and Valeria de Paiva.
 
 ## Files
 
+- [ prelude.agda ]( prelude.agda ) contains basic definitions used throughout the development.
 - [ Dial2Sets.agda ]( Dial2sets.agda ) is the definition of the basic dialectica category.
