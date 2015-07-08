@@ -17,4 +17,4 @@ by Harley Eades III and Valeria de Paiva.
 
 This development was tested with Agda version 2.4.2.3.  However, it
 does not use the Agda standard library, but uses instead the Iowa Agda
-Library version *ADD VERSION*.
+Library version **ADD VERSION**.
