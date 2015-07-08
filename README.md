@@ -12,3 +12,9 @@ by Harley Eades III and Valeria de Paiva.
 - [ Dial2Sets.agda ]( Dial2sets.agda ) contains the definition of the basic dialectica category.
 - [ FullLinCat.agda ]( FullLinCat.agda ) contains all of the constructions used in the proof that Dial2Sets is a full linear category.
 - [ Tensorial.agda ]( Tensorial.agda ) contains all of the constructions used in the proof that Dial2Sets is a model of full tensor logic.
+
+## Building
+
+This development was tested with Agda version 2.4.2.3.  However, it
+does not use the Agda standard library, but uses instead the Iowa Agda
+Library version *ADD VERSION*.
