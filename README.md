@@ -3,8 +3,8 @@
 ## Overview
 
 This repository contains the [ Agda ](http://wiki.portal.chalmers.se/agda/) developments for the
-paper *Multiple Conclusion Intuitionistic Linear Logic and Cut Elimination* by Harley Eades III and
-Valeria de Paiva.
+paper [ Multiple Conclusion Intuitionistic Linear Logic and Cut Elimination ](http://metatheorem.org/papers/FILL-cut-report.pdf)
+by Harley Eades III and Valeria de Paiva.
 
 ## Files
 
