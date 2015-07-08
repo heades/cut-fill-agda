@@ -8,3 +8,4 @@ Valeria de Paiva.
 
 ## Files
 
+- [ Dial2Sets.agda ](The definition of the basic dialectica category. )
