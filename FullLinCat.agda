@@ -1,3 +1,7 @@
+-----------------------------------------------------------------------
+-- This file formalizes the proof that Dial₂(Sets) is a full linear  --
+-- category.  See Lemma 12 of the paper.                             --
+-----------------------------------------------------------------------
 module FullLinCat where
 
 open import prelude

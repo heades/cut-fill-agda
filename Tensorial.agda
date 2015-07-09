@@ -1,16 +1,13 @@
 -----------------------------------------------------------------------
 -- This file formalizes the proof that Dial₂(Sets) is indeed a model --
--- of Full Tensorial Logic.  See Lemma ?? on page ?? of the paper.   --
+-- of Full Tensorial Logic.  See Lemma 16 and Lemma 17 of the paper. --
 -----------------------------------------------------------------------
 module Tensorial where
 
 open import prelude
 open import Dial2Sets
 
------------------------------------------------------------------------
--- We first must prove that Dial₂(Sets) is a dialogue category.      --
--- See Definition ?? on page ?? of the paper.                        --
------------------------------------------------------------------------
+-- We first must prove that Dial₂(Sets) is a dialogue category.
 
 -- This defines the negation functor: ¬ : Dial₂(Sets) → Dial₂ᵒᵖ(Sets)
 ¬ₒ : Obj → Obj
@@ -139,14 +136,6 @@ open import Dial2Sets
        ≡ fst (M (snd (rl-assoc-× a))) (fst (rl-assoc-× a))
    aux'''' {v , w , s} with M s
    ... | (h₁ , h₂) = refl
-
------------------------------------------------------------------------
--- A dialouge category is a model of multiplicative tensor logic.    --
--- Now Dial₂(Sets) is a model of multiplicative additive tensor      --
--- logic, because we know Dial₂(Sets) has coproducts that distribute --
--- over tensor; Proposition 28 on page 52 of Valeria's thesis.       --
---                                                                   --
------------------------------------------------------------------------
 
 -- The following shows that Dial₂(Sets)! is cartesian.
 
