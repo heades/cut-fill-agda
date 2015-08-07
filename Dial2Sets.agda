@@ -44,6 +44,41 @@ infix 4 _≡h_
 _≡h_ : {A B : Obj} → (f g : Hom A B) → Set
 _≡h_ {(U , X , α)}{(V , Y , β)} (f , F , p₁) (g , G , p₂) = f ≡ g × F ≡ G
 
+≡h-refl : {A B : Obj}{f : Hom A B} → f ≡h f
+≡h-refl {U , X , α}{V , Y , β}{f , F , _} = refl , refl
+
+≡h-trans : ∀{A B}{f g h : Hom A B} → f ≡h g → g ≡h h → f ≡h h
+≡h-trans {U , X , α}{V , Y , β}{f , F , _}{g , G , _}{h , H , _} (p₁ , p₂) (p₃ , p₄) rewrite p₁ | p₂ | p₃ | p₄ = refl , refl
+
+≡h-sym : ∀{A B}{f g : Hom A B} → f ≡h g → g ≡h f
+≡h-sym {U , X , α}{V , Y , β}{f , F , _}{g , G , _} (p₁ , p₂) rewrite p₁ | p₂ = refl , refl
+
+≡h-subst-○ : ∀{A B C}{f₁ f₂ : Hom A B}{g₁ g₂ : Hom B C}{j : Hom A C}
+  → f₁ ≡h f₂
+  → g₁ ≡h g₂
+  → f₂ ○ g₂ ≡h j
+  → f₁ ○ g₁ ≡h j
+≡h-subst-○ {U , X , α}
+         {V , Y , β}
+         {W , Z , γ}
+         {f₁ , F₁ , _}
+         {f₂ , F₂ , _}
+         {g₁ , G₁ , _}
+         {g₂ , G₂ , _}
+         {j , J , _}
+         (p₅ , p₆) (p₇ , p₈) (p₉ , p₁₀) rewrite p₅ | p₆ | p₇ | p₈ | p₉ | p₁₀ = refl , refl
+
+○-assoc : ∀{A B C D}{f : Hom A B}{g : Hom B C}{h : Hom C D}
+  → f ○ (g ○ h) ≡h (f ○ g) ○ h
+○-assoc {U , X , α}{V , Y , β}{W , Z , γ}{S , T , ι}
+        {f , F , _}{g , G , _}{h , H , _} = refl , refl
+
+○-idl : ∀{A B}{f : Hom A B} → id ○ f ≡h f
+○-idl {U , X , _}{V , Y , _}{f , F , _} = refl , refl
+
+○-idr : ∀{A B}{f : Hom A B} → f ○ id ≡h f
+○-idr {U , X , _}{V , Y , _}{f , F , _} = refl , refl
+
 -----------------------------------------------------------------------
 -- Dial₂(Sets) is a SMC                                              --
 -----------------------------------------------------------------------
@@ -70,6 +105,9 @@ _⊗ₐ_ {(U , X , α)}{(V , Y , β)}{(W , Z , γ)}{(S , T , δ)} (f , F , p₁)
 
 I : Obj
 I = (⊤ , ⊤ , ι)
+
+J : Obj
+J = (⊤ , ⊤ , (λ x y → ⊥))
 
 -- The left-unitor:
 λ⊗-p : ∀{U X α}{u : ⊤ × U} {x : X} → (ι ⊗ᵣ α) u ((λ _ → triv) , (λ _ → x)) → α (snd u) x
@@ -128,6 +166,41 @@ Fα (f ,  g) = (λ x → (λ x₁ → f ((x₁ , x))) , (λ x₁ → fst (g x₁
   α-cond {(u , v) , w}{(f , g)} ((p₁ , p₂) , p₃) with g u
   ... | (h₁ , h₂) = p₁ , p₂ , p₃
 
+α⊗-id₁ : ∀{A B C} → (α⊗ {A}{B}{C}) ○ α⊗-inv ≡h id
+α⊗-id₁ {U , X , α}{V , Y , β}{W , Z , γ} = ext-set aux , ext-set aux'
+ where
+   aux : {a : Σ (Σ U (λ x → V)) (λ x → W)} → rl-assoc-× (lr-assoc-× a) ≡ a
+   aux {(u , v) , w} = refl
+
+   aux' : {a : Σ (W → Σ (V → X) (λ x → U → Y)) (λ x → Σ U (λ x₁ → V) → Z)}
+     → ((λ x → (λ x₁ → fst (fst a x) x₁) , (λ x₁ → snd (fst a x) x₁)) , (λ x → snd a (fst x , snd x))) ≡ a
+   aux' {j₁ , j₂} = eq-× (ext-set aux'') (ext-set aux''')
+    where
+      aux'' : {a : W} → (fst (j₁ a) , snd (j₁ a)) ≡ j₁ a
+      aux'' {w} with j₁ w
+      ... | h₁ , h₂ = refl
+
+      aux''' : {a : Σ U (λ x₁ → V)} → j₂ (fst a , snd a) ≡ j₂ a
+      aux''' {u , v} = refl
+
+α⊗-id₂ : ∀{A B C} → (α⊗-inv {A}{B}{C}) ○ α⊗ ≡h id
+α⊗-id₂ {U , X , α}{V , Y , β}{W , Z , γ} = ext-set aux , ext-set aux'
+ where
+   aux : {a : Σ U (λ x → Σ V (λ x₁ → W))} → lr-assoc-× (rl-assoc-× a) ≡ a
+   aux {u , (v , w)} = refl
+   aux' : {a
+       : Σ (Σ V (λ x → W) → X) (λ x → U → Σ (W → Y) (λ x₁ → V → Z))} →
+      ((λ p' → fst (fst (Fα {V} {W} {X} {Y} {U} {V} {Z} a) (snd p')) (fst p')) ,
+       (λ u → (λ w → snd (fst (Fα {V} {W} {X} {Y} {U} {V} {Z} a) w) u) , (λ v → snd (Fα {V} {W} {X} {Y} {U} {V} {Z} a) (u , v))))
+      ≡ a
+   aux' {j₁ , j₂} = eq-× (ext-set aux'') (ext-set aux''')
+     where
+       aux'' : {a : Σ V (λ x → W)} → j₁ (fst a , snd a) ≡ j₁ a
+       aux'' {v , w} = refl
+       aux''' : {a : U} → ((λ w → fst (j₂ a) w) , (λ v → snd (j₂ a) v)) ≡ j₂ a
+       aux''' {u} with j₂ u
+       ... | h₁ , h₂ = refl
+       
 -- Internal hom:
 ⊸-cond : ∀{U V X Y : Set} → (U → X → Set) → (V → Y → Set) → (U → V) × (Y → X) → U × Y → Set
 ⊸-cond α β (f , g) (u , y) = α u (g y) → β (f u) y
@@ -146,6 +219,64 @@ _⊸ₐ_ {(U , X , α)}{(V , Y , β)}{(W , Z , γ)}{(S , T , δ)} (f , F , p₁)
    p₃ : {u : Σ (U → V) (λ x → Y → X)} {y : Σ W (λ x → T)} → ⊸-cond α β u (H y) → ⊸-cond γ δ (h u) y
    p₃ {h₁ , h₂}{w , t} c c' = p₂ (c (p₁ c'))
 
+cur : {A B C : Obj}
+  → Hom (A ⊗ₒ B) C
+  → Hom A (B ⊸ₒ C)
+cur {U , X , α}{V , Y , β}{W , Z , γ} (f , F , p₁)
+  = (λ u → (λ v → f (u , v)) , (λ z → snd (F z) u)) , (λ p →  fst (F (snd p)) (fst p)) , cur-cond
+ where
+   cur-cond : ∀{u : U}{y : Σ V (λ x → Z)}
+     → α u (fst (F (snd y)) (fst y))
+     → ⊸-cond β γ ((λ v → f (u , v)) , (λ z → snd (F z) u)) y
+   cur-cond {u}{v , z} p₂ p₃ with p₁ {u , v}{z} 
+   ... | p₁' with F z
+   ... | (j₁ , j₂) = p₁' (p₂ , p₃)
+
+cur-≡h : ∀{A B C}{f₁ f₂ : Hom (A ⊗ₒ B) C}
+  → f₁ ≡h f₂
+  → cur f₁ ≡h cur f₂
+cur-≡h {U , X , α}{V , Y , β}{W , Z , γ}
+       {f₁ , F₁ , p₁}{f₂ , F₂ , p₂} (p₃ , p₄)
+       rewrite p₃ | p₄ = refl , refl
+
+cur-cong : ∀{A B C}{f₁ f₂ : Hom (A ⊗ₒ B) C} → f₁ ≡h f₂ → cur f₁ ≡h cur f₂
+cur-cong {(U , X , α)} {(V , Y , β)} {(W , Z , γ)}{f₁ , F₁ , _}{f₂ , F₂ , _} (p₁ , p₂) rewrite p₁ | p₂ = refl , refl
+
+uncur : {A B C : Obj}
+  → Hom A (B ⊸ₒ C)
+  → Hom (A ⊗ₒ B) C
+uncur {U , X , α}{V , Y , β}{W , Z , γ} (f , F , p₁)
+  = (λ p → fst (f (fst p)) (snd p)) , (λ z → (λ v → F (v , z)) , (λ u → snd (f u) z)) , uncur-cond
+  where
+    uncur-cond : ∀{u : Σ U (λ x → V)} {y : Z}
+      → (α ⊗ᵣ β) u ((λ v → F (v , y)) , (λ u₁ → snd (f u₁) y))
+      → γ (fst (f (fst u)) (snd u)) y
+    uncur-cond {u , v}{z} (p₂ , p₃) with p₁ {u}{v , z} p₂
+    ... | p₁' with f u
+    ... | (j₁ , j₂) = p₁' p₃
+
+cur-uncur-bij₁ : ∀{A B C}{f : Hom (A ⊗ₒ B) C}
+  → uncur (cur f) ≡h f
+cur-uncur-bij₁ {U , X , α}{V , Y , β}{W , Z , γ}{f , F , p₁} = ext-set aux₁ , ext-set aux₂
+ where
+   aux₁ : {a : Σ U (λ x → V)} → f (fst a , snd a) ≡ f a
+   aux₁ {u , v} = refl
+   
+   aux₂ : {a : Z} → ((λ v → fst (F a) v) , (λ u → snd (F a) u)) ≡ F a
+   aux₂ {z} with F z
+   ... | j₁ , j₂ = refl
+
+cur-uncur-bij₂ : ∀{A B C}{g : Hom A (B ⊸ₒ C)}
+  → cur (uncur g) ≡h g
+cur-uncur-bij₂ {U , X , α}{V , Y , β}{W , Z , γ}{g , G , p₁} = ext-set aux₁ , ext-set aux₂
+ where
+   aux₁ : {a : U} → ((λ v → fst (g a) v) , (λ z → snd (g a) z)) ≡ g a
+   aux₁ {u} with g u
+   ... | (j₁ , j₂) = refl
+
+   aux₂ : {a : Σ V (λ x → Z)} → G (fst a , snd a) ≡ G a
+   aux₂ {v , z} = refl
+   
 -- The of-course exponential:
 !ₒ-cond : ∀{U X : Set}
   → (U → X → Set)
