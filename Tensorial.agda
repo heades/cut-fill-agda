@@ -43,6 +43,10 @@ open import Dial2Sets
 --                  ≅ Hom(A ⊗ (B ⊗ C), ⊥)
 --                  ≅ Hom(A, (B ⊗ C) ⊸ ⊥)
 --                  = Hom(A, ¬ (B ⊗ C))
+-- 
+-- Note that the previous string of isomorphisms do not depend on the
+-- fact that ⊥ is the intial object.  In fact, we can replace ⊥ with
+-- any object at all, and the result still holds.
 
 φ : {A B C : Obj}
   → Hom (A ⊗ₒ B) (¬ₒ C)
@@ -59,9 +63,11 @@ open import Dial2Sets
 φ-bij₁ {A}{B}{C}{f} with
     (cur-uncur-bij₁ {A}{B ⊗ₒ C}{J}{comp (α⊗-inv {A}{B}{C}) (uncur {A ⊗ₒ B}{C}{J} f)}) 
 ... | eq₁ with
-    cur-≡h (≡h-subst-○ {(A ⊗ₒ B) ⊗ₒ C}{A ⊗ₒ (B ⊗ₒ C)}{J}{α⊗}{α⊗}{j = uncur f} (≡h-refl {(A ⊗ₒ B) ⊗ₒ C}{A ⊗ₒ (B ⊗ₒ C)} {f = α⊗}) eq₁
-      (≡h-trans (○-assoc {f = α⊗ {A} {B} {C}} {α⊗-inv} {uncur f}) (≡h-subst-○ {f₁ = α⊗ {A} {B} {C} ○ α⊗-inv} {id} {uncur f} {uncur f}
-                                                                     {uncur f} α⊗-id₁ ≡h-refl ○-idl)))
+    cur-≡h (≡h-subst-○ {(A ⊗ₒ B) ⊗ₒ C}{A ⊗ₒ (B ⊗ₒ C)}{J}{α⊗}{α⊗}
+      {j = uncur f} (≡h-refl {(A ⊗ₒ B) ⊗ₒ C}{A ⊗ₒ (B ⊗ₒ C)} {f = α⊗}) eq₁
+      (≡h-trans (○-assoc {f = α⊗ {A} {B} {C}} {α⊗-inv} {uncur f})
+      (≡h-subst-○ {f₁ = α⊗ {A} {B} {C} ○ α⊗-inv} {id} {uncur f} {uncur f}
+      {uncur f} α⊗-id₁ ≡h-refl ○-idl)))
 ... | eq₂ = ≡h-trans eq₂ cur-uncur-bij₂
 
 φ-bij₂ : ∀{A B C : Obj}{f : Hom A (¬ₒ (B ⊗ₒ C))}
@@ -69,12 +75,15 @@ open import Dial2Sets
 φ-bij₂ {A}{B}{C}{f} with
   cur-uncur-bij₁ {f = comp (α⊗ {A}{B}{C}) (uncur f)}
 ... | eq₁ with
-  cur-cong (≡h-subst-○ {f₁ = α⊗-inv {A}{B}{C}}{α⊗-inv {A}{B}{C}}{j = comp α⊗-inv (comp α⊗ (uncur f))} ≡h-refl eq₁ ≡h-refl)
+  cur-cong (≡h-subst-○ {f₁ = α⊗-inv {A}{B}{C}}{α⊗-inv {A}{B}{C}}
+                       {j = comp α⊗-inv (comp α⊗ (uncur f))} ≡h-refl eq₁ ≡h-refl)
 ... | eq₂ with
   (cur-cong (○-assoc {f = α⊗-inv {A} {B} {C}} {α⊗} {uncur f}))
 ... | eq₃ with
-  cur-cong (≡h-subst-○ {f₁ = comp (α⊗-inv {A}{B}{C}) α⊗}{id}{uncur f}{uncur f}{comp id (uncur f)} α⊗-id₂ ≡h-refl ≡h-refl)
-... | eq₄ = ≡h-trans eq₂ (≡h-trans eq₃ (≡h-trans eq₄ (≡h-trans (cur-cong (○-idl {f = uncur f})) (cur-uncur-bij₂ {g = f}))))
+  cur-cong (≡h-subst-○ {f₁ = comp (α⊗-inv {A}{B}{C}) α⊗}{id}
+                       {uncur f}{uncur f}{comp id (uncur f)} α⊗-id₂ ≡h-refl ≡h-refl)
+... | eq₄ = ≡h-trans eq₂ (≡h-trans eq₃ (≡h-trans eq₄ (≡h-trans
+                     (cur-cong (○-idl {f = uncur f})) (cur-uncur-bij₂ {g = f}))))
 
 -- The following shows that Dial₂(Sets)! is cartesian.
 
@@ -220,7 +229,8 @@ cart-diag₂ {U , X , α}{V , Y , β}{W , Z , γ}{f = f , F , p₁}{g , G , p₂
                     map-proj-⊎₁-[] {_}{_}{X}{Y} l = refl
 
 term-diag : ∀{A : Obj} → Hom (Jₒ A) (Jₒ (⊤ , ⊥ , λ x y → ⊤))
-term-diag {U , X , α} = (λ x → triv) , (λ f u → aux (f triv) u) , (λ {u}{y} → aux' {u}{y triv})
+term-diag {U , X , α} =
+  (λ x → triv) , (λ f u → aux (f triv) u) , (λ {u}{y} → aux' {u}{y triv})
  where
    aux : 𝕃 ⊥ → U → 𝕃 X
    aux [] u = []
@@ -236,7 +246,8 @@ term-cart-crt₁ (inj₁ x :: l) = x :: term-cart-crt₁ l
 term-cart-crt₁ (inj₂ y :: l) = ⊥-elim y :: term-cart-crt₁ l
    
 term-cart₁ : ∀{A : Obj} → Hom (Jₒ A) (Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤)))
-term-cart₁ {U , X , α} = (λ x → x , triv) , (λ f u → term-cart-crt₁ (f (u , triv))) , cond
+term-cart₁ {U , X , α} =
+  (λ x → x , triv) , (λ f u → term-cart-crt₁ (f (u , triv))) , cond
  where   
    cond : {u : U} {l : 𝕃 (X ⊎ ⊥)} →
       all-pred (α u) (term-cart-crt₁ l) →
@@ -248,21 +259,30 @@ term-cart₁ {U , X , α} = (λ x → x , triv) , (λ f u → term-cart-crt₁ (
 term-cart₂ : ∀{A : Obj} → Hom (Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))) (Jₒ A)
 term-cart₂ {U , X , α} = π₁
 
-term-cart-iso₁ : ∀{A : Obj} → _≡h_ {Jₒ A} {Jₒ A} (comp {Jₒ A}{Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))}{Jₒ A} term-cart₁ term-cart₂) id
+term-cart-iso₁ : ∀{A : Obj}
+  → _≡h_ {Jₒ A} {Jₒ A} (comp {Jₒ A}{Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))}
+                             {Jₒ A} term-cart₁ term-cart₂) id
 term-cart-iso₁ {U , X , α} = refl , ext-set (λ {f} → ext-set (λ {u} → aux))
  where
    aux : ∀{l : X *} → term-cart-crt₁ (map inj₁ l) ≡ l
    aux {[]} = refl
    aux {x :: l} rewrite aux {l} = refl
 
-term-cart-iso₂ : ∀{A : Obj} → _≡h_ {Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))} {Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))}
-  (comp {Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))}{Jₒ A}{Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))} term-cart₂ term-cart₁) id
-term-cart-iso₂ {U , X , α} = ext-set aux , ext-set (λ {f} → ext-set (aux' {f}))
+term-cart-iso₂ : ∀{A : Obj}
+  → _≡h_ {Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))}
+         {Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))}
+         (comp {Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))}{Jₒ A}
+         {Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))}
+         term-cart₂ term-cart₁) id
+term-cart-iso₂ {U , X , α} =
+  ext-set aux , ext-set (λ {f} → ext-set (aux' {f}))
  where
    aux : {a : Σ U (λ x → ⊤)} → (fst a , triv) ≡ a
    aux {u , triv} = refl
 
-   aux' : {f : Σ U (λ x → ⊤) → 𝕃 (X ⊎ ⊥)}{a : Σ U (λ x → ⊤)} → map inj₁ (term-cart-crt₁ (f (fst a , triv))) ≡ f a
+   aux' : {f : Σ U (λ x → ⊤)
+     → 𝕃 (X ⊎ ⊥)}{a : Σ U (λ x → ⊤)}
+     → map inj₁ (term-cart-crt₁ (f (fst a , triv))) ≡ f a
    aux' {f}{u , triv} = aux''
     where
       aux'' : ∀{l : (X ⊎ ⊥) *} → map inj₁ (term-cart-crt₁ l) ≡ l
@@ -270,6 +290,7 @@ term-cart-iso₂ {U , X , α} = ext-set aux , ext-set (λ {f} → ext-set (aux' 
       aux'' {inj₁ x :: l} rewrite aux'' {l} = refl
       aux'' {inj₂ y :: l} = ⊥-elim y
 
-twist-cart : ∀{A B : Obj} → Hom (Jₒ (A &ₒ B)) (Jₒ (B &ₒ A)) 
+twist-cart : ∀{A B : Obj}
+  → Hom (Jₒ (A &ₒ B)) (Jₒ (B &ₒ A)) 
 twist-cart {A}{B} = cart-ar {A &ₒ B} {B} {A} π₂ π₁
 
