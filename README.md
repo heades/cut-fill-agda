@@ -9,7 +9,7 @@ by Harley Eades III and Valeria de Paiva.
 ## Files
 
 - [ prelude.agda ]( prelude.agda ) contains basic definitions used throughout the development.
-- [ Dial2Sets.agda ]( Dial2sets.agda ) contains the definition of the basic dialectica category.
+- [ Dial2Sets.agda ]( Dial2Sets.agda ) contains the definition of the basic dialectica category.
 - [ FullLinCat.agda ]( FullLinCat.agda ) contains all of the constructions used in the proof that Dial2Sets is a full linear category.
 - [ Tensorial.agda ]( Tensorial.agda ) contains all of the constructions used in the proof that Dial2Sets is a model of full tensor logic.
 
