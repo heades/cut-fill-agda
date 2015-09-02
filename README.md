@@ -1,9 +1,9 @@
-# Multiple Conclusion Intuitionistic Linear Logic and Cut Elimination
+# Multiple Conclusion Linear Logic: Cut Elimination and more
 
 ## Overview
 
 This repository contains the [ Agda ](http://wiki.portal.chalmers.se/agda/) developments for the paper
-[ Multiple Conclusion Intuitionistic Linear Logic and Cut Elimination ](http://metatheorem.org/papers/FILL-cut-report.pdf)
+[ Multiple Conclusion Linear Logic: Cut Elimination and more ](http://metatheorem.org/papers/FILL-report.pdf)
 by Harley Eades III and Valeria de Paiva.
 
 ## Files
