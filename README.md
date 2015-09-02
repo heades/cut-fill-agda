@@ -16,5 +16,5 @@ by Harley Eades III and Valeria de Paiva.
 ## Building
 
 This development was tested with Agda version 2.4.2.3.  However, it
-does not use the Agda standard library, but uses instead the Iowa Agda
-Library version **ADD VERSION**.
+does not use the Agda standard library, but uses instead the [ Iowa Agda
+Library ](  https://svn.divms.uiowa.edu/repos/clc/projects/agda/ial-releases/1.1 ) version version 1.1.
