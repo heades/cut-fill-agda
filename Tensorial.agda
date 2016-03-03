@@ -7,7 +7,7 @@ module Tensorial where
 open import prelude
 open import lineale 
 open import concrete-lineales 
-open import DCSets Set isLinealeSet
+open import DialSets Set isLinealeSet
 
 
 -- We first must prove that Dial₂(Sets) is a dialogue category.  The

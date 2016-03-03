@@ -11,7 +11,7 @@ by Harley Eades III and Valeria de Paiva.
 - [ prelude.agda ]( prelude.agda ) contains basic definitions used throughout the development.
 - [lineale.agda]( lineale.agda ) contains the definition of lineales.
 - [lineale-thms.agda]( lineale-thms.agda ) contains results about lineales.
-- [ DCSets.agda ]( DCSets.agda ) contains the definition of the basic dialectica category.
+- [ DialSets.agda ]( DialSets.agda ) contains the definition of the basic dialectica category.
 - [ FullLinCat.agda ]( FullLinCat.agda ) contains all of the constructions used in the proof that Dial2Sets is a full linear category.
 - [ Tensorial.agda ]( Tensorial.agda ) contains all of the constructions used in the proof that Dial2Sets is a model of full tensor logic.
 

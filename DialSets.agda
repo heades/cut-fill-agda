@@ -8,7 +8,7 @@ open import lineale-thms
 -- Valeria de Paiva's thesis:                                        --
 --   http://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-213.pdf          --
 -----------------------------------------------------------------------
-module DCSets {ℓ : Level}(L : Set ℓ) (l-pf : Lineale L) where
+module DialSets {ℓ : Level}(L : Set ℓ) (l-pf : Lineale L) where
 
 -----------------------------------------------------------------------
 -- Initial local definitions to make reading types easier            --
