@@ -5,7 +5,10 @@
 module Tensorial where
 
 open import prelude
-open import Dial2Sets
+open import lineale 
+open import concrete-lineales 
+open import DialSets Set isLinealeSet
+
 
 -- We first must prove that Dial₂(Sets) is a dialogue category.  The
 -- defining feature is that we use primarily implication for this.
@@ -14,22 +17,23 @@ open import Dial2Sets
 ¬ₒ : Obj → Obj
 ¬ₒ A = A ⊸ₒ J
 
-¬ₐ-aux : ∀{U V Y X : Set}{f : U → V}{F : Y → X}
-  → Σ (V → ⊤) (λ x → ⊤ → Y)
+
+¬ₐ-aux : ∀{U V Y X : Set₁}{f : U → V}{F : Y → X}
+  → Σ (V → (⊤ {lsuc lzero})) (λ x → (⊤ {lsuc lzero}) → Y)
   → Σ (U → ⊤) (λ x → ⊤ → X)
 ¬ₐ-aux {f = f}{F}(j₁ , j₂) = (λ u → j₁ (f u)) , (λ t → F (j₂ t))
 
-¬ₐ-aux' : ∀{U V : Set}{f : U → V}
-  → Σ U (λ x → ⊤)
-  → Σ V (λ x → ⊤)
+¬ₐ-aux' : ∀{U V : Set₁}{f : U → V}
+  → Σ U (λ x → (⊤ {lsuc lzero}))
+  → Σ V (λ x → (⊤ {lsuc lzero}))
 ¬ₐ-aux' {f = f} (u , triv) = f u , triv
 
 ¬ₐ : {A B : Obj} → Hom A B → Hom (¬ₒ B) (¬ₒ A)
-¬ₐ {(U , X , α)}{(V , Y , β)} (f , F , p) = ¬ₐ-aux , ¬ₐ-aux' , ¬ₐ-cond
+¬ₐ {(U , X , α)}{(V , Y , β)} (f , F , p) = (λ x → ¬ₐ-aux {f = f}{F} x) , ¬ₐ-aux' {f = f} , (λ {u} → ¬ₐ-cond {u})
  where    
    ¬ₐ-cond : {u : Σ (V → ⊤) (λ x → ⊤ → Y)} {y : Σ U (λ x → ⊤)}
-     → ⊸-cond β (λ x y₁ → ⊥) u (¬ₐ-aux' y)
-     → ⊸-cond α (λ x y₁ → ⊥) (¬ₐ-aux {f = f}{F} u) y
+     → ⊸-cond β (λ x y₁ → (⊤ {lzero})) u (¬ₐ-aux' {f = f} y)
+     → ⊸-cond α (λ x y₁ → ⊤) (¬ₐ-aux {f = f}{F} u) y
    ¬ₐ-cond {j₁ , j₂}{u , triv} p₁ p₂ = p₁ (p p₂)
 
 -- At this point we must show that the required family of bijections
@@ -75,15 +79,15 @@ open import Dial2Sets
 φ-bij₂ {A}{B}{C}{f} with
   cur-uncur-bij₁ {f = comp (α⊗ {A}{B}{C}) (uncur f)}
 ... | eq₁ with
-  cur-cong (≡h-subst-○ {f₁ = α⊗-inv {A}{B}{C}}{α⊗-inv {A}{B}{C}}
+  cur-≡h (≡h-subst-○ {f₁ = α⊗-inv {A}{B}{C}}{α⊗-inv {A}{B}{C}}
                        {j = comp α⊗-inv (comp α⊗ (uncur f))} ≡h-refl eq₁ ≡h-refl)
 ... | eq₂ with
-  (cur-cong (○-assoc {f = α⊗-inv {A} {B} {C}} {α⊗} {uncur f}))
+  (cur-≡h (○-assoc {f = α⊗-inv {A} {B} {C}} {α⊗} {uncur f}))
 ... | eq₃ with
-  cur-cong (≡h-subst-○ {f₁ = comp (α⊗-inv {A}{B}{C}) α⊗}{id}
+  cur-≡h (≡h-subst-○ {f₁ = comp (α⊗-inv {A}{B}{C}) α⊗}{id}
                        {uncur f}{uncur f}{comp id (uncur f)} α⊗-id₂ ≡h-refl ≡h-refl)
 ... | eq₄ = ≡h-trans eq₂ (≡h-trans eq₃ (≡h-trans eq₄ (≡h-trans
-                     (cur-cong (○-idl {f = uncur f})) (cur-uncur-bij₂ {g = f}))))
+                     (cur-≡h (○-idl {f = uncur f})) (cur-uncur-bij₂ {g = f}))))
 
 -- The following shows that Dial₂(Sets)! is cartesian.
 
@@ -91,7 +95,7 @@ Jₒ = !ₒ
 
 -- First, we define the cartesian product in Dial₂(Sets), and then use
 -- Jₒ to put us inside of Dial₂(Sets)!.
-_&ᵣ_ : {U X V Y : Set}
+_&ᵣ_ : {U X V Y : Set₁}
   → (α : U → X → Set)
   → (β : V → Y → Set)
   → Σ U (λ x → V)
@@ -111,34 +115,36 @@ _&ₒ_ : (A B : Obj) → Obj
 π₁ {U , X , α}{V , Y , β} =
   fst ,
   (λ (f : U → (X *)) (p : U × V) → map inj₁ (f (fst p))) ,
-  λ {u}{y} p → π₁-cond {u}{y} p
+  (λ {u y} → π₁-cond {u}{y})
  where
   π₁-cond : {u : Σ U (λ x → V)} {y : U → 𝕃 X} →
-      all-pred ((α &ᵣ β) u) (map inj₁ (y (fst u))) →
-      all-pred (α (fst u)) (y (fst u))
-  π₁-cond {u , v} y = aux y
+      foldr (λ a y₁ → Σ ((α &ᵣ β) u a) (λ x → y₁)) (⊤ {lzero}) (map inj₁ (y (fst u))) →
+      foldr (λ a y₁ → Σ (α (fst u) a) (λ x → y₁)) (⊤ {lzero}) (y (fst u))
+  π₁-cond {u , v}{y} p = aux {y u} p 
    where
-     aux : {l : X *}
-       → all-pred ((α &ᵣ β) (u , v)) (map inj₁ l) → all-pred (α u) l
-     aux {[]} triv = triv
-     aux {x :: l} (j₁ , j₂) = j₁ , aux j₂
+    aux : ∀{l}
+      → foldr (λ a y₁ → Σ ((α &ᵣ β) (u , v) a) (λ x → y₁)) (⊤ {lzero}) (map inj₁ l)
+      → foldr (λ a y₁ → Σ (α u a) (λ x → y₁)) (⊤ {lzero}) l
+    aux {[]} _ = triv
+    aux {x :: l} (p₁ , p₂) = p₁ , aux {l} p₂
 
 -- This defines the projection morphism: π₂ : A & B → B.
 π₂ : {A B : Obj} → Hom (Jₒ (A &ₒ B)) (Jₒ B)
 π₂ {U , X , α}{V , Y , β} =
-  snd , (λ f p → map inj₂ (f (snd p))) , λ {u}{y} p → π₂-cond {u}{y} p
+  snd , (λ f p → map inj₂ (f (snd p))) , (λ {u y} → π₂-cond {u}{y})
  where
   π₂-cond : {u : Σ U (λ x → V)} {y : V → 𝕃 Y} →
-      all-pred ((α &ᵣ β) u) (map inj₂ (y (snd u))) →
-      all-pred (β (snd u)) (y (snd u))
-  π₂-cond {u , v} y = aux y
+      foldr (λ a y₁ → Σ ((α &ᵣ β) u a) (λ x → y₁)) (⊤ {lzero}) (map inj₂ (y (snd u))) →
+      foldr (λ a y₁ → Σ (β (snd u) a) (λ x → y₁)) (⊤ {lzero}) (y (snd u))
+  π₂-cond {u , v}{y} p = aux {y v} p
    where
-     aux : {l : Y *}
-       → all-pred ((α &ᵣ β) (u , v)) (map inj₂ l) → all-pred (β v) l
-     aux {[]} triv = triv
-     aux {x :: l} (j₁ , j₂) = j₁ , aux j₂
+    aux : ∀{l}
+      → foldr (λ a y₁ → Σ ((α &ᵣ β) (u , v) a) (λ x → y₁)) (⊤ {lzero}) (map inj₂ l)
+      → foldr (λ a y₁ → Σ (β v a) (λ x → y₁)) (⊤ {lzero}) l
+    aux {[]} _ = triv
+    aux {x :: l} (p₁ , p₂) = p₁ , aux {l} p₂
 
-cart-ar-crt : {U X V Y W Z : Set}
+cart-ar-crt : {U X V Y W Z : Set₁}
   → {α : U → X → Set}
   → {β : V → Y → Set}
   → {γ : W → Z → Set}
@@ -149,6 +155,14 @@ cart-ar-crt  (f , F , p₁) (g , G , p₂) j w
   with (λ u → (proj-⊎₁ (j (u , g w)))) | (λ v → (proj-⊎₂ (j (f w , v))))
 ... | j₁ | j₂ = F j₁ w ++ G j₂ w 
 
+foldr-append-× : {ℓ ℓ' : Level}{A : Set ℓ}{f : A → (Set ℓ')}{l₁ l₂ : 𝕃 A}
+  → (p₁ : ∀{ℓ}{A : Set ℓ} → A ≡ ((⊤ {ℓ}) ∧ A))
+  → (p₂ : ∀{ℓ}{A B C : Set ℓ} →  (A ∧ (B ∧ C)) ≡ ((A ∧ B) ∧ C))
+  →   (foldr (λ a r → (f a) × r) (⊤ {ℓ'}) (l₁ ++ l₂))
+    ≡ ((foldr (λ a r → (f a) × r) (⊤ {ℓ'}) l₁) × (foldr (λ a r → (f a) × r) (⊤ {ℓ'}) l₂))
+foldr-append-× {l₁ = []}{l₂} p₁ p₂ = p₁
+foldr-append-× {ℓ}{ℓ'}{A}{f}{l₁ = x :: l₁}{l₂} p₁ p₂ rewrite foldr-append-× {ℓ}{ℓ'}{A}{f}{l₁ = l₁}{l₂} p₁ p₂ = p₂
+ 
 -- This takes two morphisms f : C → A and g : C → B, and constructs
 -- a morphism (f,g) : C → A & B.
 cart-ar : {C A B : Obj}
@@ -158,30 +172,31 @@ cart-ar : {C A B : Obj}
 cart-ar {W , Z , γ}{U , X , α}{V , Y , β} (f , F , p₁) (g , G , p₂)
   = (λ w → (f w , g w)) ,
     cart-ar-crt {α = α}{β}{γ} (f , F , p₁) (g , G , p₂) ,
-    (λ {u}{y} p → cart-ar-cond {u}{y} p)
+    (λ {u y} → cart-ar-cond {u}{y})
   where
     cart-ar-cond : {u : W} {y : Σ U (λ x → V) → 𝕃 (X ⊎ Y)} →
-      all-pred (γ u)
+      foldr (λ a y₁ → Σ (γ u a) (λ x → y₁)) (⊤ {lzero})
       (F (λ u₁ → proj-⊎₁ (y (u₁ , g u))) u ++
        G (λ v → proj-⊎₂ (y (f u , v))) u) →
-      all-pred ((α &ᵣ β) (f u , g u)) (y (f u , g u))
+      foldr (λ a y₁ → Σ ((α &ᵣ β) (f u , g u) a) (λ x → y₁)) (⊤ {lzero})
+      (y (f u , g u))
     cart-ar-cond {u}{j} p
       rewrite
-        all-pred-append
-          {f = γ u}
-          {F (λ u₁ → (proj-⊎₁ (j (u₁ , g u)))) u}
-          {G (λ v → (proj-⊎₂ (j (f u , v)))) u}
-          ∧-unit ∧-assoc
-     with p
-    ... | (r₁ , r₂) = aux (p₁ r₁) (p₂ r₂)
+        foldr-append-× {ℓ' = lzero}
+                       {f = γ u}
+                       {F (λ u₁ → proj-⊎₁ (j (u₁ , g u))) u}
+                       {G (λ v → proj-⊎₂ (j (f u , v))) u}
+                       ∧-unit
+                       ∧-assoc with p
+    ... | (r₁ , r₂) = aux {j (f u , g u)} (p₁ r₁) (p₂ r₂)
      where
-       aux : ∀{l}
-         → all-pred (α (f u)) ((proj-⊎₁ l))
-         → all-pred (β (g u)) ((proj-⊎₂ l))
-         → all-pred ((α &ᵣ β) (f u , g u)) l
-       aux {[]} _ _ = triv
-       aux {inj₁ x :: l} (s₁ , s₂) x₂ = s₁ , aux {l} s₂ x₂
-       aux {inj₂ y :: l} x₁ (s₁ , s₂) = s₁ , aux {l} x₁ s₂
+      aux : ∀{l}
+       → foldr (λ a y → Σ (α (f u) a) (λ x → y)) (⊤ {lzero}) (proj-⊎₁ l)
+       → foldr (λ a y → Σ (β (g u) a) (λ x → y)) (⊤ {lzero}) (proj-⊎₂ l)
+       → foldr (λ a y₁ → Σ ((α &ᵣ β) (f u , g u) a) (λ x → y₁)) (⊤ {lzero}) l
+      aux {[]} _ _ = triv
+      aux {inj₁ x :: l} (s₁ , s₂) x₂ = s₁ , aux {l} s₂ x₂
+      aux {inj₂ y :: l} x₁ (s₁ , s₂) = s₁ , aux {l} x₁ s₂
 
 -- This shows that f ≡ (f,g);π₁.
 cart-diag₁ : {A B C : Obj}
@@ -230,34 +245,40 @@ cart-diag₂ {U , X , α}{V , Y , β}{W , Z , γ}{f = f , F , p₁}{g , G , p₂
 
 term-diag : ∀{A : Obj} → Hom (Jₒ A) (Jₒ (⊤ , ⊥ , λ x y → ⊤))
 term-diag {U , X , α} =
-  (λ x → triv) , (λ f u → aux (f triv) u) , (λ {u}{y} → aux' {u}{y triv})
+  (λ x → triv) , (λ f u → aux (f triv) u) , ((λ {u}{y} → aux' {u}{y triv}))
  where
    aux : 𝕃 ⊥ → U → 𝕃 X
    aux [] u = []
    aux (x :: l) u = ⊥-elim x :: aux l u
 
-   aux' : {u : U} {l : 𝕃 ⊥} → all-pred (α u) (aux l u) → all-pred (λ y₁ → ⊤) l
+   aux' : {u : U} {l : 𝕃 ⊥} →
+      foldr (λ a y₁ → Σ (α u a) (λ x → y₁)) (⊤ {lzero}) (aux l u) →
+      foldr (λ a y₁ → Σ ⊤ (λ x → y₁)) (⊤ {lzero}) l
    aux' {u}{l = []} p = p
    aux' {u}{l = x :: l} (p , p') = triv , aux' {u}{l} p' 
 
-term-cart-crt₁ : {X : Set} → 𝕃 (X ⊎ ⊥) → 𝕃 X
+
+term-cart-crt₁ : {X : Set₁} → 𝕃 (X ⊎ ⊥) → 𝕃 X
 term-cart-crt₁ [] = []
 term-cart-crt₁ (inj₁ x :: l) = x :: term-cart-crt₁ l
 term-cart-crt₁ (inj₂ y :: l) = ⊥-elim y :: term-cart-crt₁ l
-   
+
 term-cart₁ : ∀{A : Obj} → Hom (Jₒ A) (Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤)))
 term-cart₁ {U , X , α} =
-  (λ x → x , triv) , (λ f u → term-cart-crt₁ (f (u , triv))) , cond
- where   
+  (λ x → x , triv) , (λ f u → term-cart-crt₁ (f (u , triv))) , (λ {u} {l} → cond {u}{l (u , triv)})
+ where
    cond : {u : U} {l : 𝕃 (X ⊎ ⊥)} →
-      all-pred (α u) (term-cart-crt₁ l) →
-      all-pred ((α &ᵣ (λ x y₁ → ⊤)) (u , triv)) l
+      foldr (λ a y₁ → Σ (α u a) (λ x → y₁)) (⊤ {lzero})
+      (term-cart-crt₁ l) →
+      foldr (λ a y₁ → Σ ((α &ᵣ (λ x y₂ → ⊤)) (u , triv) a) (λ x → y₁)) (⊤ {lzero})
+      l
    cond {u}{[]} p = triv
-   cond {u}{inj₁ x :: l} (p , p') = p , cond p'
-   cond {u}{inj₂ y :: l} (p , p') = triv , cond p'
+   cond {u}{inj₁ x :: l} (p , p') = p , cond {u}{l} p'
+   cond {u}{inj₂ y :: l} (p , p') = triv , cond {u}{l} p'
 
 term-cart₂ : ∀{A : Obj} → Hom (Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))) (Jₒ A)
 term-cart₂ {U , X , α} = π₁
+
 
 term-cart-iso₁ : ∀{A : Obj}
   → _≡h_ {Jₒ A} {Jₒ A} (comp {Jₒ A}{Jₒ (A &ₒ (⊤ , ⊥ , λ x y → ⊤))}

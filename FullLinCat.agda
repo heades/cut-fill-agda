@@ -5,21 +5,27 @@
 module FullLinCat where
 
 open import prelude
-open import Dial2Sets
+open import lineale 
+open import concrete-lineales 
+open import DialSets Set isLinealeSet
 
 -- Monoidal nat. trans. m⊤ : ⊤ → !⊤:
 m⊤ : Hom I (!ₒ I)
-m⊤ = id-set , (λ f → triv) , m⊤-cond
+m⊤ = id-set , (λ f → triv) , (λ {u l} → λ x → m⊤-cond {u}{l u} x)
  where
-  m⊤-cond : {u : ⊤} {l : 𝕃 ⊤} → ι u triv → all-pred (ι u) l
+  m⊤-cond : {u : ⊤ {lsuc lzero}} {l : 𝕃 (⊤ {lsuc lzero})}
+    → ι u triv
+    → foldr (λ a y → (ι u a) × y) (⊤ {lzero}) l
   m⊤-cond {triv}{[]} triv = triv
   m⊤-cond {triv}{triv :: l} triv = triv , m⊤-cond {triv}{l} triv
+
 
 -- These diagrams can be found on page 23 of the report.
 m⊤-diag₁ : _≡h_ {I}{ !ₒ (!ₒ I)}
   (comp {I} { !ₒ I} { !ₒ (!ₒ I)} m⊤ (!ₐ {I}{ !ₒ I} m⊤))
   (comp {I} { !ₒ I} { !ₒ (!ₒ I)} m⊤ (δ {I}))
 m⊤-diag₁ = refl , refl
+
 
 m⊤-diag₂ : _≡h_ {I}{I} (comp {I}{ !ₒ I}{I} m⊤ (ε {I})) (id {I})
 m⊤-diag₂ = refl , ext-set aux
@@ -28,35 +34,35 @@ m⊤-diag₂ = refl , ext-set aux
   aux {triv} = refl
 
 -- The monoidal nat. trans. m : !A ⊗ !B → !(A ⊗ B):
-h'₁ : {U V X Y : Set} → (((V → X) × (U → Y)) *) → (V → U → (X *))
+h'₁ : {U V X Y : Set₁} → (((V → X) × (U → Y)) *) → (V → U → (X *))
 h'₁ [] v u = []
 h'₁ ((j₁ , j₂) :: js) v u = (j₁ v) :: h'₁ js v u
 
-h'₁-append : ∀{U V X Y : Set}{l₁ l₂ : ((V → X) × (U → Y)) *}{v u}
+h'₁-append : ∀{U V X Y : Set₁}{l₁ l₂ : ((V → X) × (U → Y)) *}{v u}
   → (h'₁ l₁ v u) ++ (h'₁ l₂ v u) ≡ h'₁ (l₁ ++ l₂) v u
 h'₁-append {l₁ = []} = refl
 h'₁-append {l₁ = (j₁ , j₂) :: js}{l₂}{v}{u}
   rewrite h'₁-append {l₁ = js}{l₂}{v}{u} = refl
 
-h₁ : {U V X Y : Set}
+h₁ : {U V X Y : Set₁}
   → ((U × V)
   → (((V → X) × (U → Y)) *))
   → (V → U → (X *))
 h₁ g v u = h'₁ (g (u , v)) v u
 
-h'₂ : {U V X Y : Set}
+h'₂ : {U V X Y : Set₁}
   → (((V → X) × (U → Y)) *)
   → (U → V → (Y *))
 h'₂ [] u v = []
 h'₂ ((j₁ , j₂) :: js) u v = (j₂ u) :: h'₂ js u v
 
-h'₂-append : ∀{U V X Y : Set}{l₁ l₂ : ((V → X) × (U → Y)) *}{v u}
+h'₂-append : ∀{U V X Y : Set₁}{l₁ l₂ : ((V → X) × (U → Y)) *}{v u}
   → (h'₂ l₁ v u) ++ (h'₂ l₂ v u) ≡ h'₂ (l₁ ++ l₂) v u
 h'₂-append {l₁ = []} = refl
 h'₂-append {l₁ = (j₁ , j₂) :: js}{l₂}{v}{u}
   rewrite h'₂-append {l₁ = js}{l₂}{v}{u} = refl
 
-h₂ : {U V X Y : Set}
+h₂ : {U V X Y : Set₁}
   → ((U × V)
   → (((V → X) × (U → Y)) *))
   → (U → V → (Y *))
@@ -64,24 +70,23 @@ h₂ g u v = h'₂ (g (u , v)) u v
 
 m⊗ : {A B : Obj} → Hom ((!ₒ A) ⊗ₒ (!ₒ B)) (!ₒ (A ⊗ₒ B))
 m⊗ {U , X , α} {V , Y , β} =
-  id-set , (λ g → h₁ g , h₂ g) , (λ {u}{y} x → m⊗-cond {u}{y} x)
+  id-set , (λ g → h₁ g , h₂ g) , (λ {u y} → m⊗-cond {u}{y})
  where
-  m⊗-cond : {u : Σ U (λ x → V)}
-      {y : Σ U (λ x → V) → 𝕃 (Σ (V → X) (λ x → U → Y))} →
-      ((λ u₁ f → all-pred (α u₁) (f u₁)) ⊗ᵣ
-       (λ u₁ f → all-pred (β u₁) (f u₁)))
-      u
+   m⊗-cond : {u : Σ U (λ x → V)}
+      {y : Σ U (λ x → V) → 𝕃 (Σ (V → X) (λ x → U → Y))} →      
+      _⊗ᵣ_ (λ u₁ f → foldr (λ a y₁ → Σ (α u₁ a) (λ x → y₁)) ⊤ (f u₁))
+      (λ u₁ f → foldr (λ a y₁ → Σ (β u₁ a) (λ x → y₁)) ⊤ (f u₁)) u
       ((λ v u₁ → h'₁ (y (u₁ , v)) v u₁) ,
        (λ u₁ v → h'₂ (y (u₁ , v)) u₁ v)) →
-      all-pred ((α ⊗ᵣ β) u) (y u)
-  m⊗-cond {(u , v)}{g} (p₁ , p₂) = aux p₁ p₂
-   where
-    aux : ∀{l}
-        → all-pred (α u) (h'₁ l v u)
-        → all-pred (β v) (h'₂ l u v)
-        → all-pred ((α ⊗ᵣ β) (u , v)) l
-    aux {[]} p₁ p₂ = triv
-    aux {(j₁ , j₂) :: js} (p₁ , p₂) (p₃ , p₄) = (p₁ , p₃) , aux {js} p₂ p₄
+      foldr (λ a y₁ → ((α ⊗ᵣ β) u a) × y₁) (⊤ {lzero}) (y u)
+   m⊗-cond {(u , v)}{g} (p₁ , p₂) = aux {g (u , v)} p₁ p₂
+    where
+      aux : ∀{l}
+        → foldr (λ a y₁ → Σ (α u a) (λ x → y₁)) (⊤ {lzero}) (h'₁ l v u)
+        → foldr (λ a y₁ → Σ (β v a) (λ x → y₁)) (⊤ {lzero}) (h'₂ l u v)
+        → foldr(λ a B → ((α ⊗ᵣ β) (u , v) a) × B) (⊤ {lzero}) l        
+      aux {[]} _ _ = triv
+      aux {(a , b) :: l} (p₁ , p₂) (p₃ , p₄) = (p₁ , p₃) , aux {l} p₂ p₄
 
 -- The following diagrams can be found on page 24 of the report.
 m⊗-diag-A : ∀{A}
@@ -100,6 +105,7 @@ m⊗-diag-A {U , X , α} = ext-set (λ {a} → aux {a}) ,
       → h'₂ (map (λ x → (λ _ → triv) , (λ _ → x)) l) triv a ≡ l
     aux'' {u}{[]} = refl
     aux'' {u}{x :: xs} rewrite aux'' {u}{xs} = refl
+
 
 m⊗-diag-B : ∀{A}
   → ((id { !ₒ A}) ⊗ₐ m⊤) ○ (m⊗ {A} {I} ○ !ₐ (ρ⊗ {A})) ≡h ρ⊗ { !ₒ A}
@@ -186,6 +192,7 @@ m⊗-diag-E {U , X , α}{V , Y , β} = ext-set aux , ext-set aux'
       ≡ ((λ v u → h'₁ (a :: []) v u) , (λ u v → h'₂ (a :: []) u v))
   aux' {j₁ , j₂} = refl  
 
+
 m⊗-diag-F : ∀{A B : Obj}
   → δ {A} ⊗ₐ δ {B} ○ m⊗ { !ₒ A} { !ₒ B} ○ !ₐ (m⊗ {A} {B}) ≡h (m⊗ {A}{B}) ○ (δ {A ⊗ₒ B})
 m⊗-diag-F {U , X , α}{V , Y , β} =
@@ -239,22 +246,21 @@ e {U , X , α} = (λ x → triv) , (λ x u → []) , (λ {u}{y} x → e-cond {u}
    e-cond : {u : U} {y : ⊤} → ⊤ → ι triv y
    e-cond {u}{triv} triv = triv
 
-θ : ∀{U X : Set} → ((U → U → (X *)) × (U → U → (X *))) → U → X *
+θ : ∀{U X : Set₁} → ((U → U → (X *)) × (U → U → (X *))) → U → X *
 θ {U}{X} (f , g) u = (f u u) ++ (g u u)
 
 d : {A : Obj} → Hom (!ₒ A) ((!ₒ A) ⊗ₒ (!ₒ A))
-d {U , X , α} = (λ x → (x , x)) , θ , d-cond
+d {U , X , α} = (λ x → (x , x)) , θ , (λ {u y} → d-cond {u}{y})
  where
    d-cond : {u : U} {y : Σ (U → U → 𝕃 X) (λ x → U → U → 𝕃 X)} →
-      all-pred (α u) (θ y u) →
-      ((λ u₁ f → all-pred (α u₁) (f u₁)) ⊗ᵣ
-       (λ u₁ f → all-pred (α u₁) (f u₁)))
-      (u , u) y
-   d-cond {u}{f , g} = aux
+      foldr (λ a y₁ → Σ (α u a) (λ x → y₁)) (⊤ {lzero}) (θ y u) →      
+      ((λ u₁ f → foldr (λ a y₁ → Σ (α u₁ a) (λ x → y₁)) ⊤ (f u₁)) ⊗ᵣ
+      (λ u₁ f → foldr (λ a y₁ → Σ (α u₁ a) (λ x → y₁)) ⊤ (f u₁))) (u , u)
+      y
+   d-cond {u}{f , g} = aux {f u u}
     where
-      aux : ∀{l₁ l₂ : X *}
-        → all-pred (α u) (l₁ ++ l₂)
-        → ((all-pred (α u) l₁) × (all-pred (α u) l₂))
+      aux : ∀{l₁ l₂} → foldr (λ a y₁ → Σ (α u a) (λ x → y₁)) (⊤ {lzero}) (l₁ ++ l₂) →
+          Σ (foldr (λ a y₁ → Σ (α u a) (λ x → y₁)) (⊤ {lzero}) l₁) (λ x → foldr (λ a y₁ → Σ (α u a) (λ x₁ → y₁)) (⊤ {lzero}) l₂)
       aux {[]} p = triv , p
       aux {x :: xs} (p₁ , p₂) = (p₁ , fst (aux {xs} p₂)) , snd (aux {xs} p₂)
 
@@ -296,6 +302,7 @@ d-diag-K = ext-set aux , ext-set (λ {a} → aux' {a})
      →   triv
        ≡ (snd (F⊗ {f = λ x → x} {λ f → triv} {λ x → x} {λ f → triv} a) triv)
    aux' {j₁ , j₂} = refl
+
 
 iso : {A B : Obj} → Hom (((!ₒ A) ⊗ₒ (!ₒ A)) ⊗ₒ ((!ₒ B) ⊗ₒ (!ₒ B)))
                         (((!ₒ A) ⊗ₒ (!ₒ B)) ⊗ₒ ((!ₒ A) ⊗ₒ (!ₒ B)))
@@ -682,3 +689,4 @@ diag-T {U , X , _}{V , Y , _}{f , F , _} (p , p') =
        ... | p'' rewrite
            ++[] (F (j₂ (f u)) u)
          | aux'' {j₁}{j₂} = sym p''
+
