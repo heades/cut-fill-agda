@@ -11,17 +11,17 @@ open import lineale
 -- The lineale Set                                                   --
 -----------------------------------------------------------------------
 
-isPosetSet : Poset Set
-isPosetSet = (MkPoset (λ A B → (A → B)) id-set (λ f g a → g (f a)))
+isProsetSet : Proset Set
+isProsetSet = (MkProset (λ A B → (A → B)) id-set (λ f g a → g (f a)))
 
-isMonPosetSet : MonPoset Set
-isMonPosetSet =
-  MkMonPoset _×_ ⊤ isPosetSet ∧-assoc
+isMonProsetSet : MonProset Set
+isMonProsetSet =
+  MkMonProset _×_ ⊤ isProsetSet ∧-assoc
     (sym ∧-unit) ((sym ∧-unit-r)) ∧-sym (λ x x₁ → x (fst x₁) , snd x₁)
 
 isLinealeSet : Lineale Set
 isLinealeSet =
-  MkLineale isMonPosetSet (λ A B → (A → B)) (λ a b x → snd x (fst x))
+  MkLineale isMonProsetSet (λ A B → (A → B)) (λ a b x → snd x (fst x))
     (λ x x₁ x₂ → x (x₂ , x₁))
 
 -----------------------------------------------------------------------
@@ -41,8 +41,8 @@ _→2_ : Two → Two → Two
 tt →2 ff = ff
 _ →2 _ = tt
 
-isPoset2 : Poset Two
-isPoset2 = MkPoset _≤2_ aux₁ aux₂
+isProset2 : Proset Two
+isProset2 = MkProset _≤2_ aux₁ aux₂
  where
   aux₁ : {a : Two} → a ≤2 a
   aux₁ {tt} = triv
@@ -66,8 +66,8 @@ isPoset2 = MkPoset _≤2_ aux₁ aux₂
   aux₃ {ff} {ff} x x₁ = refl
 
 
-isMonPoset2 : MonPoset Two
-isMonPoset2 = MkMonPoset _⊗2_ tt isPoset2 (λ {a b c} → aux₁ {a}{b}{c}) refl aux₂ (λ {a b} → aux₃ {a}{b}) aux₄
+isMonProset2 : MonProset Two
+isMonProset2 = MkMonProset _⊗2_ tt isProset2 (λ {a b c} → aux₁ {a}{b}{c}) refl aux₂ (λ {a b} → aux₃ {a}{b}) aux₄
   where
     aux₁ : {a b c : Two} → a && b && c ≡ (a && b) && c
     aux₁ {tt} {tt} {tt} = refl
@@ -101,7 +101,7 @@ isMonPoset2 = MkMonPoset _⊗2_ tt isPoset2 (λ {a b c} → aux₁ {a}{b}{c}) re
 
 
 isLineale2 : Lineale Two
-isLineale2 = MkLineale isMonPoset2 _→2_ aux₁ aux₂
+isLineale2 = MkLineale isMonProset2 _→2_ aux₁ aux₂
  where
    aux₁ : (a b : Two) → (a && a →2 b) ≤2 b
    aux₁ tt tt = triv
@@ -136,8 +136,8 @@ one ≤3 half = ⊥
 _ ≤3 _ = ⊤
 
 
-isPoset3 : Poset Three
-isPoset3 = MkPoset _≤3_ (λ {a} → aux₁ {a}) (λ{a b c} → aux₂ {a}{b}{c})
+isProset3 : Proset Three
+isProset3 = MkProset _≤3_ (λ {a} → aux₁ {a}) (λ{a b c} → aux₂ {a}{b}{c})
  where
    aux₁ : {a : Three} → a ≤3 a
    aux₁ {zero} = triv
@@ -275,8 +275,8 @@ comp3ᵢ {one} {one} x {half} = triv
 comp3ᵢ {one} {one} x {one} = triv
 
 
-isMonPoset3ᵢ : MonPoset Three
-isMonPoset3ᵢ = MkMonPoset _⊗3ᵢ_ one isPoset3 (λ{a b c} → assoc3ᵢ {a}{b}{c}) left-ident3ᵢ right-ident3ᵢ (λ{a b} → symm3ᵢ {a}{b}) (λ {a b} → comp3ᵢ {a}{b})
+isMonProset3ᵢ : MonProset Three
+isMonProset3ᵢ = MkMonProset _⊗3ᵢ_ one isProset3 (λ{a b c} → assoc3ᵢ {a}{b}{c}) left-ident3ᵢ right-ident3ᵢ (λ{a b} → symm3ᵢ {a}{b}) (λ {a b} → comp3ᵢ {a}{b})
 
 adj3ᵢ : {a b y : Three} → (a ⊗3ᵢ y) ≤3 b → y ≤3 (a →3ᵢ b)
 adj3ᵢ {zero} {zero} {zero} p = triv
@@ -319,7 +319,7 @@ rlcomp3ᵢ one half = triv
 rlcomp3ᵢ one one = triv
 
 isLineale3ᵢ : Lineale Three
-isLineale3ᵢ = MkLineale isMonPoset3ᵢ _→3ᵢ_ rlcomp3ᵢ (λ {a b y} → adj3ᵢ {a}{b}{y})
+isLineale3ᵢ = MkLineale isMonProset3ᵢ _→3ᵢ_ rlcomp3ᵢ (λ {a b y} → adj3ᵢ {a}{b}{y})
 
 
 -- Now we define the three element proper lineale; intuitionistic and
@@ -336,8 +336,8 @@ half ⊗3 half = half
 half ⊗3 one = one
 one ⊗3 half = one
 
-isMonPoset3 : MonPoset Three
-isMonPoset3 = MkMonPoset _⊗3_ half isPoset3 (λ {a b c} → assoc3 {a}{b}{c}) left-ident3 right-ident3 (λ {a b} → symm3 {a}{b}) (λ {a b} → comp3 {a}{b})
+isMonProset3 : MonProset Three
+isMonProset3 = MkMonProset _⊗3_ half isProset3 (λ {a b c} → assoc3 {a}{b}{c}) left-ident3 right-ident3 (λ {a b} → symm3 {a}{b}) (λ {a b} → comp3 {a}{b})
  where
    assoc3 : {a b c : Three} → a ⊗3 (b ⊗3 c) ≡ (a ⊗3 b) ⊗3 c
    assoc3 {zero} {zero} {zero} = refl
@@ -452,7 +452,7 @@ half →3 half = half
 _ →3 _ = one
 
 isLineale3 : Lineale Three
-isLineale3 = MkLineale isMonPoset3 _→3_ aux (λ {a b y} → aux' a b y)
+isLineale3 = MkLineale isMonProset3 _→3_ aux (λ {a b y} → aux' a b y)
  where
    aux : (a b : Three) → (a ⊗3 (a →3 b)) ≤3 b
    aux zero zero = triv
@@ -515,8 +515,8 @@ one ≤4 half = ⊥
 _ ≤4 _ = ⊤
 
 
-isPoset4 : Poset Four
-isPoset4 = MkPoset _≤4_ (λ {a} → refl4 {a}) (λ {a b c} → trans4 {a}{b}{c}) 
+isProset4 : Proset Four
+isProset4 = MkProset _≤4_ (λ {a} → refl4 {a}) (λ {a b c} → trans4 {a}{b}{c}) 
  where
   refl4 : {a : Four} → a ≤4 a
   refl4 {zero} = triv
@@ -608,8 +608,8 @@ half ⊗4ᵢ quater = quater
 one ⊗4ᵢ quater = quater
 
 
-isMonPoset4ᵢ : MonPoset Four
-isMonPoset4ᵢ = MkMonPoset _⊗4ᵢ_ one isPoset4 (λ {a b c} → assoc4ᵢ {a}{b}{c}) left-ident4ᵢ right-ident4ᵢ (λ {a b} → symm4ᵢ {a}{b}) (λ {a b} → compat4ᵢ {a}{b})
+isMonProset4ᵢ : MonProset Four
+isMonProset4ᵢ = MkMonProset _⊗4ᵢ_ one isProset4 (λ {a b c} → assoc4ᵢ {a}{b}{c}) left-ident4ᵢ right-ident4ᵢ (λ {a b} → symm4ᵢ {a}{b}) (λ {a b} → compat4ᵢ {a}{b})
  where
   assoc4ᵢ : {a b c : Four} → a ⊗4ᵢ (b ⊗4ᵢ c) ≡ (a ⊗4ᵢ b) ⊗4ᵢ c
   assoc4ᵢ {zero} {zero} {zero} = refl
@@ -783,7 +783,7 @@ one →4ᵢ quater = quater
 _ →4ᵢ _ = one
 
 isLineale4ᵢ : Lineale Four
-isLineale4ᵢ = MkLineale isMonPoset4ᵢ _→4ᵢ_ rlcomp4ᵢ (λ {a b y} → adj4ᵢ {a}{b}{y})
+isLineale4ᵢ = MkLineale isMonProset4ᵢ _→4ᵢ_ rlcomp4ᵢ (λ {a b y} → adj4ᵢ {a}{b}{y})
  where
   rlcomp4ᵢ : (a b : Four) → (a ⊗4ᵢ (a →4ᵢ b)) ≤4 b
   rlcomp4ᵢ zero zero = triv

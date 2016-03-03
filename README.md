@@ -8,7 +8,7 @@ by Harley Eades III and Valeria de Paiva.
 
 ## Files
 
-- [ prelude.agda ]( prelude.agda ) contains basic definitions used throughout the development.
+- [ prelude.agda ]( prelude.agda ) contains basic definitions used throughout the development.  
 - [lineale.agda]( lineale.agda ) contains the definition of lineales.
 - [lineale-thms.agda]( lineale-thms.agda ) contains results about lineales.
 - [ DialSets.agda ]( DialSets.agda ) contains the definition of the basic dialectica category.

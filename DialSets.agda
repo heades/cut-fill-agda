@@ -14,44 +14,44 @@ module DialSets {ℓ : Level}(L : Set ℓ) (l-pf : Lineale L) where
 -- Initial local definitions to make reading types easier            --
 -----------------------------------------------------------------------
 _≤L_ : L → L → Set
-x ≤L y = (rel (poset (mposet l-pf))) x y
+x ≤L y = (rel (proset (mproset l-pf))) x y
 
 reflL : {a : L} → a ≤L a
-reflL = prefl (poset (mposet l-pf))
+reflL = prefl (proset (mproset l-pf))
 
 transL : {a b c : L} → a ≤L b → b ≤L c → a ≤L c
-transL = ptrans (poset (mposet l-pf))
+transL = ptrans (proset (mproset l-pf))
 
-compatL : {a : L} {b : L} → rel (poset (mposet l-pf)) a b →
-      {c : L} → rel (poset (mposet l-pf)) (mul (mposet l-pf) a c) (mul (mposet l-pf) b c)
+compatL : {a : L} {b : L} → rel (proset (mproset l-pf)) a b →
+      {c : L} → rel (proset (mproset l-pf)) (mul (mproset l-pf) a c) (mul (mproset l-pf) b c)
       
-compatL = compat (mposet l-pf)
+compatL = compat (mproset l-pf)
 
 _⊗L_ : L → L → L
-x ⊗L y = mul (mposet l-pf) x y
+x ⊗L y = mul (mproset l-pf) x y
 
-unitL = unit (mposet l-pf)
+unitL = unit (mproset l-pf)
 
-left-identL : {a : L} → mul (mposet l-pf) (unit (mposet l-pf)) a ≡ a
-left-identL = left-ident (mposet l-pf)
+left-identL : {a : L} → mul (mproset l-pf) (unit (mproset l-pf)) a ≡ a
+left-identL = left-ident (mproset l-pf)
 
-right-identL : {a : L} → mul (mposet l-pf) a (unit (mposet l-pf)) ≡ a
-right-identL = right-ident (mposet l-pf)
+right-identL : {a : L} → mul (mproset l-pf) a (unit (mproset l-pf)) ≡ a
+right-identL = right-ident (mproset l-pf)
 
 assocL : {a b c : L} →
-      mul (mposet l-pf) a (mul (mposet l-pf) b c) ≡
-      mul (mposet l-pf) (mul (mposet l-pf) a b) c
-assocL = assoc (mposet l-pf)
+      mul (mproset l-pf) a (mul (mproset l-pf) b c) ≡
+      mul (mproset l-pf) (mul (mproset l-pf) a b) c
+assocL = assoc (mproset l-pf)
 
-symmL : {a b : L} → mul (mposet l-pf) a b ≡ mul (mposet l-pf) b a
-symmL = symm (mposet l-pf)
+symmL : {a b : L} → mul (mproset l-pf) a b ≡ mul (mproset l-pf) b a
+symmL = symm (mproset l-pf)
 
 _→L_ : L → L → L
 _→L_ = l-imp l-pf
 
 adjL : {a b y : L} →
-      rel (poset (mposet l-pf)) (mul (mposet l-pf) a y) b →
-      rel (poset (mposet l-pf)) y (l-imp l-pf a b)
+      rel (proset (mproset l-pf)) (mul (mproset l-pf) a y) b →
+      rel (proset (mproset l-pf)) y (l-imp l-pf a b)
 adjL = adj l-pf
 
 -----------------------------------------------------------------------
@@ -157,7 +157,7 @@ _⊗ₐ_ {(U , X , α)}{(V , Y , β)}{(W , Z , γ)}{(S , T , δ)} (f , F , p₁)
  where
   cond : {u : Σ U (λ x → V)} {y : Σ (S → Z) (λ x → W → T)} →
       ((α ⊗ᵣ β) u (F⊗ {f = f}{F}{g}{G} y)) ≤L ((γ ⊗ᵣ δ) (⟨ f , g ⟩ u) y)
-  cond {u , v}{h , j} = l-mul-funct {p = mposet l-pf} (p₁ {u}{h (g v)}) (p₂ {v}{j (f u)}) 
+  cond {u , v}{h , j} = l-mul-funct {p = mproset l-pf} (p₁ {u}{h (g v)}) (p₂ {v}{j (f u)}) 
 
 
 -- The unit for tensor:
@@ -397,7 +397,7 @@ cur-uncur-bij₂ {U , X , α}{V , Y , β}{W , Z , γ}{g , G , p₁} = ext-set au
          (foldr (λ a y → (β (f u) a) ⊗L y) unitL l)
        aux {[]} = reflL
        aux {y :: ys} with aux {ys}
-       ... | IH = l-mul-funct {p = mposet l-pf} (p {u}{y}) IH
+       ... | IH = l-mul-funct {p = mproset l-pf} (p {u}{y}) IH
 
 -- The unit of the comonad:
 ε : ∀{A} → Hom (!ₒ A) A
@@ -427,16 +427,16 @@ cur-uncur-bij₂ {U , X , α}{V , Y , β}{W , Z , γ}{g , G , p₁} = ext-set au
        unitL (y u))
    cond {u}{t} = aux {t u}
     where
-     aux : {l : 𝕃 (U → 𝕃 X)} → rel (poset (mposet l-pf))
-      (foldr (λ a y → mul (mposet l-pf) (α u a) y) (unit (mposet l-pf))
+     aux : {l : 𝕃 (U → 𝕃 X)} → rel (proset (mproset l-pf))
+      (foldr (λ a y → mul (mproset l-pf) (α u a) y) (unit (mproset l-pf))
        (foldr (λ f → _++_ (f u)) [] l))
       (foldr
        (λ a y →
-          mul (mposet l-pf)
-          (foldr (λ a₁ y₁ → mul (mposet l-pf) (α u a₁) y₁)
-           (unit (mposet l-pf)) (a u))
+          mul (mproset l-pf)
+          (foldr (λ a₁ y₁ → mul (mproset l-pf) (α u a₁) y₁)
+           (unit (mproset l-pf)) (a u))
           y)
-       (unit (mposet l-pf)) l)      
+       (unit (mproset l-pf)) l)      
      aux {[]} = reflL
      aux {t₁ :: ts} with aux {ts}
      ... | IH with t₁ u
@@ -446,8 +446,8 @@ cur-uncur-bij₂ {U , X , α}{V , Y , β}{W , Z , γ}{g , G , p₁} = ext-set au
         ts)} = IH
      ... | x :: xs rewrite
            sym (foldr-monoid {l₁ = xs}{foldr (λ f → _++_ (f u)) [] ts}{_⊗L_}{α u}{unitL}{left-identL}{assocL})
-         | assocL {(α u x)}{(foldr (λ x₁ → mul (mposet l-pf) (α u x₁)) (unit (mposet l-pf)) xs)}{(foldr (λ x₁ → mul (mposet l-pf) (α u x₁)) (unit (mposet l-pf)) (foldr (λ f → _++_ (f u)) [] ts))}
-      = compat-sym {p = mposet l-pf} IH     
+         | assocL {(α u x)}{(foldr (λ x₁ → mul (mproset l-pf) (α u x₁)) (unit (mproset l-pf)) xs)}{(foldr (λ x₁ → mul (mproset l-pf) (α u x₁)) (unit (mproset l-pf)) (foldr (λ f → _++_ (f u)) [] ts))}
+      = compat-sym {p = mproset l-pf} IH     
 
 -- The proper diagrams:
 comonand-diag₁ : ∀{A}

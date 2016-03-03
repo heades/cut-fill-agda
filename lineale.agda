@@ -9,37 +9,37 @@ module lineale where
 
 open import prelude
 
-record Poset {ℓ : Level}(A : Set ℓ) : Set (lsuc ℓ) where
- constructor MkPoset
+record Proset {ℓ : Level}(A : Set ℓ) : Set (lsuc ℓ) where
+ constructor MkProset
  field
    rel : A → A → Set
    prefl : ∀{a : A} → rel a a
    ptrans : ∀{a b c : A} → rel a b → rel b c → rel a c
 
-open Poset public
+open Proset public
 
-record MonPoset {ℓ : Level}(P : Set ℓ) : Set (lsuc ℓ) where
- constructor MkMonPoset
+record MonProset {ℓ : Level}(P : Set ℓ) : Set (lsuc ℓ) where
+ constructor MkMonProset
  field
    mul : P → P → P
    unit : P
    
-   poset : Poset P
+   proset : Proset P
    assoc : ∀{a b c : P} → mul a (mul b c) ≡ mul (mul a b) c
    left-ident : ∀{a : P} → mul unit a ≡ a
    right-ident : ∀{a : P} → mul a unit ≡ a
    symm : ∀{a b : P} → mul a b ≡ mul b a
-   compat : ∀{a b : P} → (rel poset) a b → (∀{c : P} → (rel poset) (mul a c) (mul b c))
+   compat : ∀{a b : P} → (rel proset) a b → (∀{c : P} → (rel proset) (mul a c) (mul b c))
 
-open MonPoset public
+open MonProset public
 
 record Lineale {ℓ : Level}(L : Set ℓ) : Set (lsuc ℓ) where
  constructor MkLineale
  field
-   mposet : MonPoset L
+   mproset : MonProset L
    l-imp : L → L → L
    
-   rlcomp : (a b : L) → (rel (poset mposet)) ((mul mposet) a (l-imp a b)) b
-   adj : {a b y : L} → (rel (poset mposet)) (mul mposet a y) b → (rel (poset mposet)) y (l-imp a b)
+   rlcomp : (a b : L) → (rel (proset mproset)) ((mul mproset) a (l-imp a b)) b
+   adj : {a b y : L} → (rel (proset mproset)) (mul mproset a y) b → (rel (proset mproset)) y (l-imp a b)
 
 open Lineale public
