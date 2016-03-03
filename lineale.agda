@@ -9,16 +9,12 @@ module lineale where
 
 open import prelude
 
-¡ : {ℓ : Level}{A : Set ℓ} → (A → A → 𝔹) → A → A → Set
-¡ r x y = r x y ≡ tt
-
 record Poset {ℓ : Level}(A : Set ℓ) : Set (lsuc ℓ) where
  constructor MkPoset
  field
    rel : A → A → Set
    prefl : ∀{a : A} → rel a a
    ptrans : ∀{a b c : A} → rel a b → rel b c → rel a c
-   -- pasym : ∀{a b : A} → rel a b → rel b a → a ≡ b
 
 open Poset public
 
