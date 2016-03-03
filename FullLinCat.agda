@@ -7,7 +7,7 @@ module FullLinCat where
 open import prelude
 open import lineale 
 open import concrete-lineales 
-open import DialSets Set isLinealeSet
+open import DCSets Set isLinealeSet
 
 -- Monoidal nat. trans. m⊤ : ⊤ → !⊤:
 m⊤ : Hom I (!ₒ I)
